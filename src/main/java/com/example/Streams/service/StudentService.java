@@ -82,11 +82,35 @@ public class StudentService {
         return studentRepository.getLastFiveStudent();
     }
 
-/*    public Student findAll(String name) {
-        List<List<String>> sortedList = list.stream()
-                .filter(o -> o.startsWith("А"))
-        Comparator.reverseOrder());
-        System.out.println(list);
-        return null;
-    }*/
+    public void printParallel() {
+        System.out.println(studentRepository.findStudentById(52L));
+        System.out.println(studentRepository.findStudentById(53L));
+        new Thread(() -> {
+            System.out.println(studentRepository.findStudentById(54L));
+            System.out.println(studentRepository.findStudentById(55L));
+        }).start();
+        new Thread(() -> {
+            System.out.println(studentRepository.findStudentById(56L));
+            System.out.println(studentRepository.findStudentById(57L));
+        }).start();
+    }
+
+    public synchronized void printSynchronized() {
+        System.out.println(studentRepository.findStudentById(52L));
+        System.out.println(studentRepository.findStudentById(53L));
+        new Thread(() -> {
+            printSync(54L);
+            printSync(55L);
+        }).start();
+        new Thread(() -> {
+            printSync(56L);
+            printSync(57L);
+        }).start();
+    }
+
+    public void printSync(Long studentId) {
+        synchronized (StudentService.class) {
+            System.out.println(studentRepository.findStudentById(studentId));
+        }
+    }
 }
